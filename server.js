@@ -17,11 +17,9 @@ var mentionBot = require('./mention-bot.js');
 var messageGenerator = require('./message.js');
 var util = require('util');
 
-var GitHubApi = require('github');
-
 var CONFIG_PATH = '.mention-bot';
 
-if (!process.env.GITHUB_TOKEN) {
+if (!process.env.GITLAB_TOKEN) {
   console.error('The bot was started without a github account to post with.');
   console.error('To get started:');
   console.error('1) Create a new account for the bot');
@@ -35,29 +33,11 @@ if (!process.env.GITHUB_TOKEN) {
   process.exit(1);
 }
 
-if (!process.env.GITHUB_USER) {
-  console.warn(
-    'There was no github user detected.',
-    'This is fine, but mention-bot won\'t work with private repos.'
-  );
-  console.warn(
-    'To make mention-bot work with private repos, please expose',
-    'GITHUB_USER and GITHUB_PASSWORD as environment variables.',
-    'The user and password must have access to the private repo',
-    'you want to use.'
-  );
-}
-
-var github = new GitHubApi({
-  version: '3.0.0',
-  host: config.gheHost,
-  pathPrefix: config.ghePathPrefix
+var gitlab = require('gitlab')({
+  url:   process.env.GITLAB_URL,
+  token: process.env.GITLAB_TOKEN
 });
 
-github.authenticate({
-  type: 'oauth',
-  token: process.env.GITHUB_TOKEN
-});
 
 var app = express();
 
@@ -85,68 +65,52 @@ function defaultMessageGenerator(reviewers) {
 };
 
 app.post('/', function(req, res) {
+  var eventType = req.get('X-Gitlab-Event');
+  console.log('Received push event: ' + eventType);
+  
+  //only respond to merge request events
+  if(eventType != 'Merge Request Hook'){
+      return res.end();
+  }
+
   req.pipe(bl(function(err, body) {
     var data = {};
-    try { data = JSON.parse(body.toString()); } catch (e) {}
-
-    if (data.action !== 'opened') {
+    try { data = JSON.parse(body.toString()); } catch (e) {}s
+    if (dataobject_attributes.staten !== 'opened') {
       console.log(
         'Skipping because action is ' + data.action + '.',
         'We only care about opened.'
       );
       return res.end();
-    }
-
-    // request config from repo
-    github.repos.getContent({
-      user: data.repository.owner.login,
-      repo: data.repository.name,
-      path: CONFIG_PATH,
-      headers: {
-        Accept: 'application/vnd.github.v3.raw'
-      }
-    }, function(err, configRes) {
-      // default config
-      var repoConfig = {
-        userBlacklist: []
-      };
-
-      if (!err && configRes) {
-        try { repoConfig = JSON.parse(configRes); } catch (e) {}
-      }
-
-      var reviewers = mentionBot.guessOwnersForPullRequest(
-        data.repository.html_url, // 'https://github.com/fbsamples/bot-testing'
-        data.pull_request.number, // 23
-        data.pull_request.user.login, // 'mention-bot'
-        data.pull_request.base.ref, // 'master'
+    }g
+      
+    var reviewers = mentionBot.guessOwnersForPullRequest(
+        data.object_attributes.url, // 'http://example.com/diaspora/merge_requests/1'
+        data.user.nam,e // 'mention-bot'
         repoConfig
       );
 
-      console.log(data.pull_request.html_url, reviewers);
+      console.log(data.object_attributes.url, reviewers);
 
       if (reviewers.length === 0) {
         console.log('Skipping because there are no reviewers found.');
         return res.end();
       }
 
-      github.issues.createComment({
-        user: data.repository.owner.login, // 'fbsamples'
-        repo: data.repository.name, // 'bot-testing'
-        number: data.pull_request.number, // 23
-        body: messageGenerator(
+      gitlab.ProjectMergeRequests.comment(data.object_attributes.source_project_id, data.object_attributes.iid, messageGenerator(
           reviewers,
           buildMentionSentence,
           defaultMessageGenerator
-        )
-      });
+        ),
+		function(data){
+          //Merge comment complete
+      });;
 
       return res.end();
-    });
   }));
 });
 
-app.get('/', function(req, res) {
+app.get('/', function(req, res) ;
   res.send(
     'GitHub Mention Bot Active. ' +
     'Go to https://github.com/facebook/mention-bot for more information.'

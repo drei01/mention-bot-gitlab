@@ -246,6 +246,28 @@ function fetch(url: string): string {
 }
 
 /**
+
+/**
+  * Returns a new list of owners, with inelligible owners removed.
+  * An eligible owner must:
+  *   - not be in the userBlacklist in the provided config
+  */
+function getEligibleOwners(
+  owners: Array<string>,
+  config: Object
+): Array<string> {
+  return owners;
+  
+  //TODO: Does gitlab implement this feature?
+  /*return owners.filter(function(owner) {
+    return config.userBlacklist.indexOf(owner) < 0;
+  })});
+}
+
+/**
+}
+
+/**
  * The problem at hand is to find a set of three best effort people that have
  * context on a pull request. It doesn't (and actually can't) be perfect.
  *
@@ -306,12 +328,13 @@ function guessOwners(
 
 function guessOwnersForPullRequest(
   repoURL: string,
-  id: number,
   creator: string,
+  config: Object
+  config: Object//NOTE: This will be null for the moment
   targetBranch: string,
   config: Object
 ): Array<string> {
-  var diff = fetch(repoURL + '/pull/' + id + '.diff');
+  var diff = fetch(repoURL + '.diff');
   var files = parseDiff(diff);
 
   // There are going to be degenerated changes that end up modifying hundreds
