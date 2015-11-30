@@ -20,7 +20,7 @@ var downloadFileSync = function(url: string, cookies: ?string): string {
     args.push('-H', 'Cookie: ${cookies}');
   }
 
-  return require('child_process')
+  return require('exec-file-sync')
     .execFileSync('curl', args, {encoding: 'utf8'}).toString();
 };
 
