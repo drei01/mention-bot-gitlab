@@ -12,6 +12,7 @@
 'use strict';
 
 var fs = require('fs');
+var execFileSync = require('exec-file-sync');
 
 var downloadFileSync = function(url: string, cookies: ?string): string {
   var args = ['--silent', '-L', url];
@@ -20,8 +21,7 @@ var downloadFileSync = function(url: string, cookies: ?string): string {
     args.push('-H', 'Cookie: ${cookies}');
   }
 
-  return require('exec-file-sync')
-    .execFileSync('curl', args, {encoding: 'utf8'}).toString();
+  return execFileSync('curl', args, {encoding: 'utf8'}).toString();
 };
 
 type FileInfo = {
