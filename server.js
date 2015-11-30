@@ -87,7 +87,7 @@ app.post('/', function(req, res) {
     var reviewers = mentionBot.guessOwnersForPullRequest(
         data.object_attributes.url, // 'http://example.com/diaspora/merge_requests/1'
         data.user.name, // 'mention-bot'
-        repoConfig
+        {}
       );
 
       console.log(data.object_attributes.url, reviewers);

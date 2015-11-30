@@ -317,9 +317,9 @@ function guessOwners(
     .filter(function(owner) {
       return owner !== creator;
     })
-    .filter(function(owner) {
+    /*.filter(function(owner) {
       return config.userBlacklist.indexOf(owner) === -1;
-    })
+    })*/
     .slice(0, 3);
 }
 
