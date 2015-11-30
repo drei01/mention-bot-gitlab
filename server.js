@@ -82,7 +82,7 @@ app.post('/', function(req, res) {
         'We only care about opened.'
       );
       return res.end();
-    }g
+    }
       
     var reviewers = mentionBot.guessOwnersForPullRequest(
         data.object_attributes.url, // 'http://example.com/diaspora/merge_requests/1'
@@ -104,7 +104,7 @@ app.post('/', function(req, res) {
         ),
 		function(data){
           //Merge comment complete
-      });;
+      });
 
       return res.end();
   }));
