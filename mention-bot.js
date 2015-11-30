@@ -17,7 +17,7 @@ var downloadFileSync = function(url: string, cookies: ?string): string {
   var args = ['--silent', '-L', url];
 
   if (cookies) {
-    args.push('-H', `Cookie: ${cookies}`);
+    args.push('-H', 'Cookie: ${cookies}');
   }
 
   return require('child_process')
