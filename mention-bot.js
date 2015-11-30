@@ -228,7 +228,7 @@ function getSortedOwners(
  */
 function fetch(url: string): string {
   if (!module.exports.enableCachingForDebugging) {
-    return downloadFileSync(url, githubAuthCookies);
+    return downloadFileSync(url);
   }
 
   var cacheDir = __dirname + '/cache/';
@@ -238,7 +238,7 @@ function fetch(url: string): string {
   }
   var cache_key = cacheDir + url.replace(/[^a-zA-Z0-9-_\.]/g, '-');
   if (!fs.existsSync(cache_key)) {
-    var file = downloadFileSync(url, githubAuthCookies);
+    var file = downloadFileSync(url);
     fs.writeFileSync(cache_key, file);
   }
   return fs.readFileSync(cache_key, 'utf8');
