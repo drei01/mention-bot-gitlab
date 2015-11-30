@@ -11,7 +11,6 @@
 
 'use strict';
 
-var githubAuthCookies = require('./githubAuthCookies');
 var fs = require('fs');
 
 var downloadFileSync = function(url: string, cookies: ?string): string {
@@ -262,9 +261,7 @@ function getEligibleOwners(
   /*return owners.filter(function(owner) {
     return config.userBlacklist.indexOf(owner) < 0;
   })});
-}
-
-/**
+  */
 }
 
 /**
@@ -329,10 +326,8 @@ function guessOwners(
 function guessOwnersForPullRequest(
   repoURL: string,
   creator: string,
-  config: Object
-  config: Object//NOTE: This will be null for the moment
-  targetBranch: string,
-  config: Object
+  config: Object,//NOTE: This will be null for the moment
+  targetBranch: string
 ): Array<string> {
   var diff = fetch(repoURL + '.diff');
   var files = parseDiff(diff);
@@ -365,5 +360,5 @@ module.exports = {
   enableCachingForDebugging: false,
   parseDiff: parseDiff,
   parseBlame: parseBlame,
-  guessOwnersForPullRequest: guessOwnersForPullRequest,
+  guessOwnersForPullRequest: guessOwnersForPullRequest
 };

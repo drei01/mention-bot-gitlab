@@ -86,7 +86,7 @@ app.post('/', function(req, res) {
       
     var reviewers = mentionBot.guessOwnersForPullRequest(
         data.object_attributes.url, // 'http://example.com/diaspora/merge_requests/1'
-        data.user.nam,e // 'mention-bot'
+        data.user.name, // 'mention-bot'
         repoConfig
       );
 
@@ -110,7 +110,7 @@ app.post('/', function(req, res) {
   }));
 });
 
-app.get('/', function(req, res) ;
+app.get('/', function(req, res) {
   res.send(
     'GitHub Mention Bot Active. ' +
     'Go to https://github.com/facebook/mention-bot for more information.'
