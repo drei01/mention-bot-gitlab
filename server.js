@@ -76,9 +76,9 @@ app.post('/', function(req, res) {
   req.pipe(bl(function(err, body) {
     var data = {};
     try { data = JSON.parse(body.toString()); } catch (e) {}
-    if (data.object_attributes.staten !== 'opened') {
+    if (data.object_attributes.state !== 'opened') {
       console.log(
-        'Skipping because action is ' + data.action + '.',
+        'Skipping because action is ' + data.object_attributes.state + '.',
         'We only care about opened.'
       );
       return res.end();
