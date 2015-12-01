@@ -81,7 +81,7 @@ app.post('/', function(req, res) {
     }
       
     request({
-        url : process.env.GITLAB_URL + '/api/v3/projects/' + data.merge_request.target_project_id + '/merge_request/' + data.merge_request.id + '/changes',
+        url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_request/' + data.object_attributes.id + '/changes',
         headers : {
             'PRIVATE-TOKEN' : process.env.GITLAB_TOKEN
         }
@@ -114,7 +114,7 @@ app.post('/', function(req, res) {
           }
         
           request.post({
-                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.merge_request.target_project_id + '/merge_request/' + data.merge_request.id + '/comments',
+                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_request/' + data.object_attributes.id + '/comments',
                 body: JSON.stringify({
                     note : messageGenerator(
                       reviewers,
