@@ -324,12 +324,11 @@ function guessOwners(
 }
 
 function guessOwnersForPullRequest(
-  repoURL: string,
+  diff: string,
   creator: string,
   config: Object,//NOTE: This will be null for the moment
   targetBranch: string
 ): Array<string> {
-  var diff = fetch(repoURL + '.diff');
   var files = parseDiff(diff);
 
   // There are going to be degenerated changes that end up modifying hundreds
