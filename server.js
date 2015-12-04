@@ -99,7 +99,7 @@ app.post('/', function(req, res) {
         var reviewers = mentionBot.guessOwnersForPullRequest(
             data.object_attributes.url,//repo url
             data.object_attributes.last_commit.id,//sha1 of last commit
-            merge_data.files,//all files for this merge request
+            merge_data.changes,//all files for this merge request
             data.user.name, // 'mention-bot'
             {}
           );
