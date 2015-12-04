@@ -325,7 +325,7 @@ function guessOwners(
 
 function guessOwnersForPullRequest(
   repoURL: string,
-  sha1: string
+  sha1: string,
   files: Array<string>,
   creator: string,
   config: Object,//NOTE: This will be null for the moment
