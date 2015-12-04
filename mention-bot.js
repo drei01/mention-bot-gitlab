@@ -14,7 +14,7 @@
 var fs = require('fs');
 
 var downloadFileSync = function(url: string, cookies: ?string): string {
-  var args = ['--silent', '-L', url];
+  var args = ['--silent', '-L', '--insecure', url];
 
   if (cookies) {
     args.push('-H', 'Cookie: ${cookies}');
