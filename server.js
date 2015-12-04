@@ -20,6 +20,8 @@ var request = require('request');
 
 var CONFIG_PATH = '.mention-bot';
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";//ignore ssl errors
+
 if (!process.env.GITLAB_TOKEN) {
   console.error('The bot was started without a github account to post with.');
   console.error('To get started:');
