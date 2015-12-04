@@ -337,11 +337,11 @@ function guessOwnersForPullRequest(
   // all of them to get the best set of reviewers. In practice, we don't
   // want to do hundreds of http requests. Using the top 5 files is enough
   // to get us 3 people that may have context.
-  files.sort(function(a, b) {
+  /*files.sort(function(a, b) {
     var countA = a.deletedLines.length;
     var countB = b.deletedLines.length;
     return countA > countB ? -1 : (countA < countB ? 1 : 0);
-  });
+  });*/
   files = files.slice(0, 5);
 
   var blames = {};
