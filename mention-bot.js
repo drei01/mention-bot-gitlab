@@ -324,12 +324,13 @@ function guessOwners(
 }
 
 function guessOwnersForPullRequest(
-  diff: string,
+  repoURL: string,
+  sha1: string
+  files: Array<string>,
   creator: string,
   config: Object,//NOTE: This will be null for the moment
   targetBranch: string
 ): Array<string> {
-  var files = parseDiff(diff);
 
   // There are going to be degenerated changes that end up modifying hundreds
   // of files. In theory, it would be good to actually run the algorithm on
@@ -345,8 +346,8 @@ function guessOwnersForPullRequest(
 
   var blames = {};
   files.forEach(function(file) {
-    var path = file.path;
-    var blame = fetch(repoURL + '/blame/' + targetBranch + '/' + path);
+    var path = file.new_path;
+    var blame = fetch(repoURL + '/blame/' + sha1 + '/' + path);
     blames[path] = parseBlame(blame);
   });
 

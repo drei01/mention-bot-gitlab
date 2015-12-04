@@ -94,14 +94,10 @@ app.post('/', function(req, res) {
         var merge_data = {};
         try { merge_data = JSON.parse(body.toString()); } catch (e) {}
         
-        var diff = '';
-        for(var key in merge_data.files){
-            diff += '\n';
-            diff += merge_data.files[key].diff;
-        }
-        
         var reviewers = mentionBot.guessOwnersForPullRequest(
-            diff, // DIFF
+            data.object_attributes.url,//repo url
+            data.object_attributes.last_commit.id,//sha1 of last commit
+            merge_data.files,//all files for this merge request
             data.user.name, // 'mention-bot'
             {}
           );
