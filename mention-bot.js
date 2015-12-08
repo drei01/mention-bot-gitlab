@@ -369,10 +369,11 @@ function guessOwners(
   allOwners: Array<string>,
   creator: string
 ): Array<string> {
-  allOwners = getSortedOwners(allOwners);
-
   return []
     .concat(allOwners)
+    .filter(function(owner, index, self) {
+        return self.indexOf(owner) === index;
+    })
     .filter(function(owner) {
       return owner !== 'none';
     })
