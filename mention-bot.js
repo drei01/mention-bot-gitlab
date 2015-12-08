@@ -288,7 +288,7 @@ function getBlame(url){
           },
           function() {
             //Enter Credentials
-            page.evaluate(function() {
+            page.evaluate(function(username, password) {
               document.getElementById('user_login').value = username;
               document.getElementById('user_password').value = password;
               document.getElementById('new_user').submit();
