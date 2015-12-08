@@ -366,7 +366,8 @@ function getEligibleOwners(
  *  them, concat them and finally take the first 3 names.
  */
 function guessOwners(
-  allOwners: Array<string>
+  allOwners: Array<string>,
+  creator: string
 ): Array<string> {
   allOwners = getSortedOwners(allOwners);
 
