@@ -22,7 +22,6 @@
     "install": "^0.4.0",
     "jest-cli": "^0.7.1",
     "node-phantom-simple": "^2.2.0",
-    "node-slimerjs": "^1.0.1",
     "npm": "^3.5.1",
     "phantomjs": "^1.9.19",
     "request": "^2.67.0"

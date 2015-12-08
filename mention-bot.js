@@ -410,7 +410,7 @@ function guessOwnersForPullRequest(
       
       files.forEach(function(file) {
         promises.push(new Promise(function(resolve, reject) {
-            getBlame(repoURL + '/blame/' + sha1 + '/' + path)
+            getBlame(repoURL + '/blame/' + sha1 + '/' + file)
             .then(function(athrs){
               authors = authors.concat(athrs);
               resolve();
