@@ -98,7 +98,7 @@ app.post('/', function(req, res) {
 
           if (reviewers.length === 0) {
             console.log('Skipping because there are no reviewers found.');
-            return res.end();
+            return;
           }
         
           request.post({
@@ -116,11 +116,10 @@ app.post('/', function(req, res) {
               if (error || response.statusCode != 200) {
                     console.log('Error commenting on merge request: ' + body);
               }
-              
-              return res.end();
           }); 
         });
         
+        return res.end();        
     });
   }));
 });
