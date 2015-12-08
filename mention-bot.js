@@ -246,6 +246,8 @@ function fetch(url: string): string {
 }
 
 function getBlame(url){
+    var username = process.env.GITLAB_USER;
+    var password = process.env.GITLAB_PASSWORD;
     return new Promise(function(resolve, reject){
        driver.create({ parameters: { 'ignore-ssl-errors': 'yes' } }, function(err, browser) {
         if(err){
@@ -257,6 +259,19 @@ function getBlame(url){
         
         page.onConsoleMessage = function(msg) {
           console.log(msg);
+        };
+           
+        page.onError = function(msg, trace) {
+          var msgStack = ['ERROR: ' + msg];
+
+          if (trace && trace.length) {
+            msgStack.push('TRACE:');
+            trace.forEach(function(t) {
+              msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function +'")' : ''));
+            });
+          }
+
+          console.error(msgStack.join('\n'));
         };
 
         page.onLoadStarted = function() {
@@ -274,8 +289,8 @@ function getBlame(url){
           function() {
             //Enter Credentials
             page.evaluate(function() {
-              document.getElementById('user_login').value = process.env.GITLAB_USER;
-              document.getElementById('user_password').value = process.env.GITLAB_PASSWORD;
+              document.getElementById('user_login').value = username;
+              document.getElementById('user_password').value = password;
               document.getElementById('new_user').submit();
             });
           },
