@@ -12,6 +12,7 @@
 'use strict';
 
 var fs = require('fs');
+var driver = require('node-phantom-simple');
 
 var downloadFileSync = function(url: string, cookies: ?string): string {
   var args = ['--silent', '-L', '--insecure', url];
@@ -144,7 +145,7 @@ function parseBlame(blame: string): Array<string> {
   // The way the document is structured is that commits and lines are
   // interleaved. So every time we see a commit we grab the author's name
   // and every time we see a line we log the last seen author.
-  var re = /(rel="(?:author|contributor)">([^<]+)<\/a> authored|<tr class="blame-line">)/g;
+  var re = /(class="commit-author-link has_tooltip">([^<]+)<\/a> authored)/g;
 
   var currentAuthor = 'none';
   var lines = [];
@@ -244,6 +245,80 @@ function fetch(url: string): string {
   return fs.readFileSync(cache_key, 'utf8');
 }
 
+function getBlame(url){
+    return new Promise(function(resolve, reject){
+       driver.create({ parameters: { 'ignore-ssl-errors': 'yes' } }, function(err, browser) {
+        if(err){
+            throw err;
+        }
+       return browser.createPage(function(err,page) {
+        //track whether the page is in the progress of loading
+        var loadInProgress = false;
+        
+        page.onConsoleMessage = function(msg) {
+          console.log(msg);
+        };
+
+        page.onLoadStarted = function() {
+          loadInProgress = true;
+        };
+
+        page.onLoadFinished = function() {
+          loadInProgress = false;
+        };
+           
+        var steps = [
+          function() {
+            page.open(process.env.GITLAB_URL + '/users/signin');
+          },
+          function() {
+            //Enter Credentials
+            page.evaluate(function() {
+              document.getElementById('user_login').value = process.env.GITLAB_USER;
+              document.getElementById('user_password').value = process.env.GITLAB_PASSWORD;
+              document.getElementById('new_user').submit();
+            });
+          },
+          function() {
+               page.open(url);
+          },
+          function() {
+            page.evaluate(function () {
+                var authors = [];
+
+                $('.commit-author-link').each(function () {
+                    var author = $(this).text();
+                    if(authors.indexOf(author) == -1){
+                        authors.push(author); 
+                    }
+                });
+
+                return authors;
+              }, function (err,result) {
+                resolve(result);
+              });
+          }
+        ];
+        
+        var testindex = 0;
+        var interval = setInterval(function() {
+          if(loadInProgress){
+              return;
+          }
+          if (typeof steps[testindex] == "function") {
+            console.log("step " + (testindex + 1) );
+            steps[testindex]();
+            testindex++;
+          } else {              
+             clearInterval(interval);
+             browser.exit();
+          }
+        }, 2000);
+      }); 
+    }); 
+    });
+}
+
 /**
 
 /**
@@ -291,25 +366,11 @@ function getEligibleOwners(
  *  them, concat them and finally take the first 3 names.
  */
 function guessOwners(
-  files: Array<FileInfo>,
-  blames: { [key: string]: Array<string> },
-  creator: string,
-  config: Object
+  allOwners: Array<string>
 ): Array<string> {
-  var deletedOwners = getDeletedOwners(files, blames);
-  var allOwners = getAllOwners(files, blames);
-
-  deletedOwners = getSortedOwners(deletedOwners);
   allOwners = getSortedOwners(allOwners);
 
-  // Remove owners that are also in deletedOwners
-  var deletedOwnersSet = new Set(deletedOwners);
-  var allOwners = allOwners.filter(function(element) {
-    return !deletedOwnersSet.has(element);
-  });
-
   return []
-    .concat(deletedOwners)
     .concat(allOwners)
     .filter(function(owner) {
       return owner !== 'none';
@@ -331,29 +392,40 @@ function guessOwnersForPullRequest(
   config: Object,//NOTE: This will be null for the moment
   targetBranch: string
 ): Array<string> {
+  return new Promise(function(resolve, reject) {
+      // There are going to be degenerated changes that end up modifying hundreds
+      // of files. In theory, it would be good to actually run the algorithm on
+      // all of them to get the best set of reviewers. In practice, we don't
+      // want to do hundreds of http requests. Using the top 5 files is enough
+      // to get us 3 people that may have context.
+      /*files.sort(function(a, b) {
+        var countA = a.deletedLines.length;
+        var countB = b.deletedLines.length;
+        return countA > countB ? -1 : (countA < countB ? 1 : 0);
+      });*/
+      files = files.slice(0, 5);
 
-  // There are going to be degenerated changes that end up modifying hundreds
-  // of files. In theory, it would be good to actually run the algorithm on
-  // all of them to get the best set of reviewers. In practice, we don't
-  // want to do hundreds of http requests. Using the top 5 files is enough
-  // to get us 3 people that may have context.
-  /*files.sort(function(a, b) {
-    var countA = a.deletedLines.length;
-    var countB = b.deletedLines.length;
-    return countA > countB ? -1 : (countA < countB ? 1 : 0);
-  });*/
-  files = files.slice(0, 5);
+      var authors = [];
+      var promises = [];
+      
+      files.forEach(function(file) {
+        promises.push(new Promise(function(resolve, reject) {
+            getBlame(repoURL + '/blame/' + sha1 + '/' + path)
+            .then(function(athrs){
+              authors = authors.concat(athrs);
+              resolve();
+            });   
+        }));
+      });
 
-  var blames = {};
-  files.forEach(function(file) {
-    var path = file.new_path;
-    var blame = fetch(repoURL + '/blame/' + sha1 + '/' + path);
-    blames[path] = parseBlame(blame);
-  });
-
-  // This is the line that implements the actual algorithm, all the lines
-  // before are there to fetch and extract the data needed.
-  return guessOwners(files, blames, creator, config);
+      // This is the line that implements the actual algorithm, all the lines
+      // before are there to fetch and extract the data needed.
+      Promise.all(promises)
+      .then(function() { 
+          resolve(guessOwners(authors));
+      })
+      .catch(console.error);
+    });
 }
 
 module.exports = {

@@ -22,17 +22,8 @@ var CONFIG_PATH = '.mention-bot';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";//ignore ssl errors
 
-if (!process.env.GITLAB_TOKEN) {
-  console.error('The bot was started without a github account to post with.');
-  console.error('To get started:');
-  console.error('1) Create a new account for the bot');
-  console.error('2) Settings > Personal access tokens > Generate new token');
-  console.error('3) Only check `public_repo` and click Generate token');
-  console.error('4) Run the following command:');
-  console.error('GITHUB_TOKEN=insert_token_here npm start');
-  console.error('5) Run the following command in another tab:');
-  console.error('curl -X POST -d @__tests__/data/23.webhook http://localhost:5000/');
-  console.error('6) Check that it commented here: https://github.com/fbsamples/bot-testing/pull/23');
+if (!process.env.GITLAB_TOKEN || !process.env.GITLAB_URL || !process.env.GITLAB_USER || !process.env.GITLAB_PASSWORD) {
+  console.error('GITLAB_TOKEN, GITLAB_URL, GITLAB_USER, GITLAB_PASSWORD are required environment variables');
   process.exit(1);
 }
 
@@ -96,15 +87,14 @@ app.post('/', function(req, res) {
         var merge_data = {};
         try { merge_data = JSON.parse(body.toString()); } catch (e) {}
         
-        var reviewers = mentionBot.guessOwnersForPullRequest(
-            data.object_attributes.url,//repo url
+        mentionBot.guessOwnersForPullRequest(
+            data.object_attributes.source.web_url,//repo url
             data.object_attributes.last_commit.id,//sha1 of last commit
             merge_data.changes,//all files for this merge request
             data.user.name, // 'mention-bot'
             {}
-          );
-
-          console.log(data.object_attributes.url, reviewers);
+          ).then(function(reviewers){
+           console.log(data.object_attributes.url, reviewers);
 
           if (reviewers.length === 0) {
             console.log('Skipping because there are no reviewers found.');
@@ -128,7 +118,8 @@ app.post('/', function(req, res) {
               }
               
               return res.end();
-          });
+          }); 
+        });
         
     });
   }));
