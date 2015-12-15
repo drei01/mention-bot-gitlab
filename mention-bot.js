@@ -287,12 +287,16 @@ function getBlame(url){
             page.open(process.env.GITLAB_URL + '/users/signin');
           },
           function() {
-            //Enter Credentials
+            //Enter Credentials by passing them into evaluate
             page.evaluate(function(username, password) {
               document.getElementById('user_login').value = username;
               document.getElementById('user_password').value = password;
               document.getElementById('new_user').submit();
-            });
+            },function(){
+              //callback not used  
+            },
+            username,
+            password);
           },
           function() {
                page.open(url);
