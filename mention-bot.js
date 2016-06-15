@@ -292,11 +292,12 @@ function getBlame(url){
               document.getElementById('user_login').value = username;
               document.getElementById('user_password').value = password;
               document.getElementById('new_user').submit();
-            },function(){
-              //callback not used  
             },
             username,
-            password);
+            password,
+            function(){
+              //callback not used  
+            });
           },
           function() {
                page.open(url);
