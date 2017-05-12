@@ -101,9 +101,9 @@ app.post('/', function(req, res) {
             request.debug = true;
 
             request.post({
-                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_requests/' + data.object_attributes.id + '/notes',
+                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_requests/' + data.object_attributes.id + '/comments',
                 body: JSON.stringify({
-                    body : messageGenerator(
+                    note : messageGenerator(
                       reviewers,
                       buildMentionSentence,
                       defaultMessageGenerator)
