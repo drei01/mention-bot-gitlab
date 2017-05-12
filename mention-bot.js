@@ -435,6 +435,7 @@ function guessOwnersForPullRequest(
         promises.push(new Promise(function(resolve, reject) {
             getBlame(repoURL + '/blame/' + sha1 + '/' + file.old_path)
             .then(function(athrs){
+                console.log(athrs);
               authors = authors.concat(athrs);
               resolve();
             });   
