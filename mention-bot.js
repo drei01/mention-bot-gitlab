@@ -290,9 +290,9 @@ function getBlame(url){
           function() {
             //Enter Credentials by passing them into evaluate
             page.evaluate(function(username, password) {
-              document.getElementById('user_login').value = username;
-              document.getElementById('user_password').value = password;
-              document.getElementById('new_user').submit();
+              document.getElementById('username').value = username;
+              document.getElementById('password').value = password;
+              document.getElementById('new_ldap_user').submit();
             },
             username,
             password,
