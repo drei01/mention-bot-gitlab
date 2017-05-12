@@ -94,7 +94,6 @@ app.post('/', function(req, res) {
             data.user.name, // 'mention-bot'
             {}
           ).then(function(reviewers){
-           console.log(data.object_attributes.url, reviewers);
 
           if (reviewers.length === 0) {
             console.log('Skipping because there are no reviewers found.');
