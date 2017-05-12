@@ -111,9 +111,9 @@ app.post('/', function(req, res) {
                 headers : {
                     'PRIVATE-TOKEN' : process.env.GITLAB_TOKEN
                 }
-            },function(){
-              if (error || response.statusCode != 200) {
-                    console.log('Error commenting on merge request: ' + body);
+            },function(commentError, commentResponse, commentBody){
+              if (commentError || commentResponse.statusCode != 200) {
+                    console.log('Error commenting on merge request: ' + commentBody);
               }
           }); 
         });
