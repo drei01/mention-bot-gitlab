@@ -24,6 +24,7 @@
     "node-phantom-simple": "^2.2.4",
     "npm": "^3.10.10",
     "phantomjs": "^1.9.20",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "phantomjs-polyfill": "0.0.2"
   }
 }

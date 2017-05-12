@@ -13,6 +13,7 @@
 
 var fs = require('fs');
 var driver = require('node-phantom-simple');
+require('phantomjs-polyfill');
 
 var downloadFileSync = function(url: string, cookies: ?string): string {
   var args = ['--silent', '-L', '--insecure', url];
