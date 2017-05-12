@@ -101,13 +101,12 @@ app.post('/', function(req, res) {
             request.debug = true;
 
             request.post({
-                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_request/' + data.object_attributes.id + '/comments',
-                body: JSON.stringify({
-                    body : messageGenerator(
+                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_requests/' + data.object_attributes.id + '/notes',
+                body: JSON.stringify(messageGenerator(
                       reviewers,
                       buildMentionSentence,
                       defaultMessageGenerator)
-                    }),
+                    ),
                 headers : {
                     'PRIVATE-TOKEN' : process.env.GITLAB_TOKEN
                 }
