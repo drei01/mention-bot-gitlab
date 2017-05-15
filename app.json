@@ -1,21 +1,25 @@
 {
   "name": "mention-bot",
   "description": "Automatically mention potential reviewers on pull requests.",
-  "repository": "https://github.com/facebook/mention-bot",
+  "repository": "https://github.com/pborreli/mention-bot",
   "logo": "https://avatars0.githubusercontent.com/u/15710697",
   "keywords": ["node", "express", "github", "pull requests"],
   "env": {
-    "GITHUB_TOKEN": {
-      "description": "A token generated for the account which will comment on your pull requests.",
+    "GITLAB_URL":  {
+      "description": "URL of your gitlab instance.",
       "required": true
     },
-    "GITHUB_USER": {
-      "description": "If you want mention-bot to work with private repos, you need to add your github login",
-      "required": false
+    "GITLAB_TOKEN": {
+      "description": "Token of your gitlab instance.",
+      "required": true
     },
-    "GITHUB_PASSWORD": {
-      "description": "Password for Github account.",
-      "required": false
+    "GITLAB_USER": {
+      "description": "If you want mention-bot to work with private repos, you need to add your gitlab login",
+      "required": true
+    },
+    "GITLAB_PASSWORD": {
+      "description": "Password for gitlab account.",
+      "required": true
     }
   }
 }

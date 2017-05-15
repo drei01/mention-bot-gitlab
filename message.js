@@ -20,7 +20,7 @@ module.exports = function(
   // This file is a place where you can change the way the message the bot
   // uses to comment. For example:
   //
-  //   return 'Please review this ' + mentionSentenceBuilder(reviewers);
+     return 'Merci de valider cette MR ' + mentionSentenceBuilder(reviewers);
   //
   // will print
   //

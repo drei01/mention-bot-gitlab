@@ -17,7 +17,6 @@ var mentionBot = require('./mention-bot.js');
 var messageGenerator = require('./message.js');
 var util = require('util');
 var request = require('request');
-
 var CONFIG_PATH = '.mention-bot';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";//ignore ssl errors
@@ -94,15 +93,15 @@ app.post('/', function(req, res) {
             data.user.name, // 'mention-bot'
             {}
           ).then(function(reviewers){
-           console.log(data.object_attributes.url, reviewers);
 
           if (reviewers.length === 0) {
             console.log('Skipping because there are no reviewers found.');
             return;
           }
-        
-          request.post({
-                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_request/' + data.object_attributes.id + '/comments',
+            request.debug = true;
+
+            request.post({
+                url : process.env.GITLAB_URL + '/api/v3/projects/' + data.object_attributes.target_project_id + '/merge_requests/' + data.object_attributes.id + '/comments',
                 body: JSON.stringify({
                     note : messageGenerator(
                       reviewers,
@@ -110,11 +109,12 @@ app.post('/', function(req, res) {
                       defaultMessageGenerator)
                     }),
                 headers : {
-                    'PRIVATE-TOKEN' : process.env.GITLAB_TOKEN
+                    'PRIVATE-TOKEN' : process.env.GITLAB_TOKEN,
+                    'Content-Type' : 'application/json'
                 }
-            },function(){
-              if (error || response.statusCode != 200) {
-                    console.log('Error commenting on merge request: ' + body);
+            },function(commentError, commentResponse, commentBody){
+              if (commentError || commentResponse.statusCode != 200) {
+                    console.log('Error commenting on merge request: ' + commentBody);
               }
           }); 
         });
